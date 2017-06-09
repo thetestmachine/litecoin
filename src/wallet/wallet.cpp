@@ -3341,8 +3341,7 @@ bool CWallet::InitLoadWallet()
             return InitError(strprintf(_("Error loading %s"), walletFile));
     }
 
-	/*
-    if (GetBoolArg("-upgradewallet", fFirstRun))
+	if (GetBoolArg("-upgradewallet", fFirstRun))
     {
         int nMaxVersion = GetArg("-upgradewallet", 0);
         if (nMaxVersion == 0) // the -upgradewallet without argument case
@@ -3359,8 +3358,7 @@ bool CWallet::InitLoadWallet()
         }
         walletInstance->SetMaxVersion(nMaxVersion);
     }
-	*/
-
+	
     if (fFirstRun)
     {
         // Create new keyUser and set as default key
