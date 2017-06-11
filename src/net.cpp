@@ -413,8 +413,13 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest, bool fCountFailure
             CloseSocket(hSocket);
             return NULL;
         }
+		
+		LogPrint("net", ">>> ConnectNode 0001 <<<");
 
         if (pszDest && addrConnect.IsValid()) {
+			
+			LogPrint("net", ">>> ConnectNode 0002 <<<");
+			
             // It is possible that we already have a connection to the IP/port pszDest resolved to.
             // In that case, drop the connection that was just created, and return the existing CNode instead.
             // Also store the name we used to connect in that CNode, so that future FindNode() calls to that
@@ -422,6 +427,8 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest, bool fCountFailure
             CNode* pnode = FindNode((CService)addrConnect);
             if (pnode)
             {
+				LogPrint("net", ">>> ConnectNode 0003 <<<");
+				
                 pnode->AddRef();
                 {
                     LOCK(cs_vNodes);
@@ -436,6 +443,8 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest, bool fCountFailure
 
         addrman.Attempt(addrConnect, fCountFailure);
 
+		LogPrint("net", ">>> ConnectNode 0004 <<<");
+		
         // Add node
         CNode* pnode = new CNode(hSocket, addrConnect, pszDest ? pszDest : "", false);
         pnode->AddRef();
@@ -444,15 +453,21 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest, bool fCountFailure
             LOCK(cs_vNodes);
             vNodes.push_back(pnode);
         }
+		
+		LogPrint("net", ">>> ConnectNode 0005 <<<");
 
         pnode->nServicesExpected = ServiceFlags(addrConnect.nServices & nRelevantServices);
         pnode->nTimeConnected = GetTime();
+		
+		LogPrint("net", ">>> ConnectNode 0006 <<<");
 
         return pnode;
     } else if (!proxyConnectionFailed) {
         // If connecting to the node failed, and failure is not caused by a problem connecting to
         // the proxy, mark this as an attempt.
         addrman.Attempt(addrConnect, fCountFailure);
+		
+		LogPrint("net", ">>> ConnectNode 0010 <<<");
     }
 
     return NULL;
@@ -495,6 +510,8 @@ void CNode::CloseSocketDisconnect()
 
 void CNode::PushVersion()
 {
+	LogPrint("net", ">>> PushVersion 0001 <<<");
+	
     int nBestHeight = GetNodeSignals().GetHeight().get_value_or(0);
 
     int64_t nTime = (fInbound ? GetAdjustedTime() : GetTime());
@@ -1594,8 +1611,12 @@ void static ProcessOneShot()
     CAddress addr;
     CSemaphoreGrant grant(*semOutbound, true);
     if (grant) {
+		LogPrint("net", ">>> ProcessOneShot 0001 <<<");
         if (!OpenNetworkConnection(addr, false, &grant, strDest.c_str(), true))
+		{
+			LogPrint("net", ">>> ProcessOneShot 0002 <<<");
             AddOneShot(strDest);
+		}
     }
 }
 
@@ -1610,6 +1631,7 @@ void ThreadOpenConnections()
             BOOST_FOREACH(const std::string& strAddr, mapMultiArgs["-connect"])
             {
                 CAddress addr(CService(), NODE_NONE);
+				LogPrint("net", ">>> ThreadOpenConnections 0001 <<<");
                 OpenNetworkConnection(addr, false, NULL, strAddr.c_str());
                 for (int i = 0; i < 10 && i < nLoop; i++)
                 {
@@ -1735,6 +1757,7 @@ void ThreadOpenConnections()
                 LogPrint("net", "Making feeler connection to %s\n", addrConnect.ToString());
             }
 
+			LogPrint("net", ">>> ThreadOpenConnections 0002 <<<");
             OpenNetworkConnection(addrConnect, (int)setConnected.size() >= std::min(nMaxConnections - 1, 2), &grant, NULL, false, fFeeler);
         }
     }
@@ -1808,6 +1831,7 @@ void ThreadOpenAddedConnections()
                 // If strAddedNode is an IP/port, decode it immediately, so
                 // OpenNetworkConnection can detect existing connections to that IP/port.
                 CService service(info.strAddedNode, Params().GetDefaultPort());
+				LogPrint("net", ">>> ThreadOpenAddedConnections 0001 <<<");
                 OpenNetworkConnection(CAddress(service, NODE_NONE), false, &grant, info.strAddedNode.c_str(), false);
                 MilliSleep(500);
             }
@@ -1820,6 +1844,8 @@ void ThreadOpenAddedConnections()
 // if successful, this moves the passed grant to the constructed node
 bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound, const char *pszDest, bool fOneShot, bool fFeeler)
 {
+	LogPrint("net", ">>> OpenNetworkConnection 0001 <<<");
+	
     //
     // Initiate outbound network connection
     //
@@ -1832,19 +1858,37 @@ bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSem
     } else if (FindNode(std::string(pszDest)))
         return false;
 
+	LogPrint("net", ">>> OpenNetworkConnection 0002 <<<");
+	
     CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure);
     boost::this_thread::interruption_point();
+	
+	LogPrint("net", ">>> OpenNetworkConnection 0003 <<<");
 
     if (!pnode)
+	{
+		LogPrint("net", ">>> OpenNetworkConnection 0004 <<<");
         return false;
+	}
     if (grantOutbound)
+	{
+		LogPrint("net", ">>> OpenNetworkConnection 0005 <<<");
         grantOutbound->MoveTo(pnode->grantOutbound);
+	}
     pnode->fNetworkNode = true;
     if (fOneShot)
+	{
+		LogPrint("net", ">>> OpenNetworkConnection 0006 <<<");
         pnode->fOneShot = true;
+	}
     if (fFeeler)
+	{
+		LogPrint("net", ">>> OpenNetworkConnection 0007 <<<");
         pnode->fFeeler = true;
+	}
 
+	LogPrint("net", ">>> OpenNetworkConnection 0008 <<<");
+	
     return true;
 }
 
@@ -2529,9 +2573,16 @@ CNode::CNode(SOCKET hSocketIn, const CAddress& addrIn, const std::string& addrNa
     else
         LogPrint("net", "Added connection peer=%d\n", id);
 
+	LogPrint("net", ">>> CNode 0001 <<<");
+	
     // Be shy and don't send version until we hear
     if (hSocket != INVALID_SOCKET && !fInbound)
+	{
+		LogPrint("net", ">>> CNode 0002 <<<");
         PushVersion();
+	}
+	
+	LogPrint("net", ">>> CNode 0003 <<<");
 
     GetNodeSignals().InitializeNode(GetId(), this);
 }

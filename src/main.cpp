@@ -5071,9 +5071,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             SeenLocal(addrMe);
         }
 
+		LogPrint("net", ">>> ProcessMessage 0001 <<<");
+		
         // Be shy and don't send version until we hear
         if (pfrom->fInbound)
+		{
+			LogPrint("net", ">>> ProcessMessage 0002 <<<");
+			
             pfrom->PushVersion();
+		}
 
         pfrom->fClient = !(pfrom->nServices & NODE_NETWORK);
 
