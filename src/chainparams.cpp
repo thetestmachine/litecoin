@@ -74,9 +74,9 @@ public:
         consensus.nMajorityEnforceBlockUpgrade = 7500;
         consensus.nMajorityRejectBlockOutdated = 9500;
         consensus.nMajorityWindow = 10000;
-        consensus.BIP34Height = 1;
-        consensus.BIP34Hash = uint256S("fa09d204a83a768ed5a7c8d441fa62f2043abf420cff1226c7b4329aeb9d51cf");
-        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
+        consensus.BIP34Height = 1; // first version 2 block height
+        consensus.BIP34Hash = uint256S("0xd1c175570320d4d6388a4525385b8f20460d340f621cfeebb9824712b9e593c5"); // first version 2 block hash
+        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 60;
         consensus.nPowTargetSpacing = 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -105,12 +105,13 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0xfa;
-        pchMessageStart[1] = 0xa2;
-        pchMessageStart[2] = 0xf0;
-        pchMessageStart[3] = 0xc1;
+		// EINSTEINIUM SPECIFICATIONS: pchMessageStart[4] = { 0xe8, 0xf1, 0xc4, 0xac };
+        pchMessageStart[0] = 0xe8;
+		pchMessageStart[1] = 0xf1;
+		pchMessageStart[2] = 0xc4;
+		pchMessageStart[3] = 0xac;
         nDefaultPort = 41878;
-        nPruneAfterHeight = 100000;
+        nPruneAfterHeight = 1000000;
 
         genesis = CreateGenesisBlock(1392841423, 3236648, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -121,12 +122,12 @@ public:
 		vSeeds.push_back(CDNSSeedData("emc2.foundation", "dnsseeder01.emc2.foundation"));
         vSeeds.push_back(CDNSSeedData("backup.emc2.foundation", "dnsseeder02.emc2.foundation"));
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,48);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
-        base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,50);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,176);
-        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
-        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,33); // EINSTEINIUM SPECIFICATIONS: PUBKEY_ADDRESS = 33, // Einsteinium addresses start with E
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // EINSTEINIUM SPECIFICATIONS: SCRIPT_ADDRESS = 5
+        base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,50); // keeping LTC specifications
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,176); // keeping LTC specifications
+        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >(); // keeping LTC specifications
+        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >(); // keeping LTC specifications
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
