@@ -219,8 +219,7 @@ UniValue addnode(const UniValue& params, bool fHelp)
     if (strCommand == "onetry")
     {
         CAddress addr;
-		LogPrint("net", ">>> addnode 0001 <<<");
-        OpenNetworkConnection(addr, false, NULL, strNode.c_str());
+		OpenNetworkConnection(addr, false, NULL, strNode.c_str());
         return NullUniValue;
     }
 
