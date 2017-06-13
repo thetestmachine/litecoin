@@ -47,6 +47,8 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/math/distributions/poisson.hpp>
 #include <boost/thread.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int.hpp>
 
 using namespace std;
 
@@ -1719,16 +1721,50 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
     return true;
 }
 
-CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
+int static generateMTRandom(unsigned int s, int range)
 {
-    int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
-    // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64)
-        return 0;
+    boost::mt19937 gen(s);
+    boost::uniform_int<> dist(1, range);
+    return dist(gen);
+}
 
-    CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
-    nSubsidy >>= halvings;
+CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams) // EMC2 is not using consensusParams right now, but they remain for future compatibility
+{
+    CAmount nSubsidy = 0;
+
+    int StartOffset;
+    int WormholeStartBlock;
+    int mod = nHeight % 36000;
+    if (mod != 0) mod = 1;
+    int epoch = (nHeight / 36000) + mod;
+
+    long wseed = 5299860 * epoch; // Discovered: 1952, Atomic number: 99 Melting Point: 860
+
+    StartOffset = generateMTRandom(wseed, 35820);
+    WormholeStartBlock = StartOffset + ((epoch - 1)  * 36000); // Wormholes start from Epoch 2
+
+
+    if(epoch > 1 && epoch < 148 && nHeight >= WormholeStartBlock && nHeight < WormholeStartBlock + 180)
+    {
+        nSubsidy = 2973 * COIN;
+    }
+    else
+	{
+		if (nHeight == 1) nSubsidy = 10747 * COIN;
+		else if (nHeight <= 72000) nSubsidy = 1024 * COIN;
+		else if(nHeight <= 144000) nSubsidy = 512 * COIN;
+		else if(nHeight <= 288000) nSubsidy = 256 * COIN;
+		else if(nHeight <= 432000) nSubsidy = 128 * COIN;
+		else if(nHeight <= 576000) nSubsidy = 64 * COIN;
+		else if(nHeight <= 864000) nSubsidy = 32 * COIN;
+		else if(nHeight <= 1080000) nSubsidy = 16 * COIN;
+		else if (nHeight <= 1584000) nSubsidy = 8 * COIN;
+		else if (nHeight <= 2304000) nSubsidy = 4 * COIN;
+		else if (nHeight <= 5256000) nSubsidy = 2 * COIN;
+		else if (nHeight <= 26280000) nSubsidy = 1 * COIN;
+
+	}
+
     return nSubsidy;
 }
 
