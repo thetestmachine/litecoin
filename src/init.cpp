@@ -481,8 +481,8 @@ std::string HelpMessage(HelpMessageMode mode)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/einsteinium-project/einsteinium>";
-    const std::string URL_WEBSITE = "<https://einsteinium.org>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/einsteinium/einsteinium>";
+    const std::string URL_WEBSITE = "<https://www.emc2.foundation>";
     // todo: remove urls from translations on next change
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2011, COPYRIGHT_YEAR) + " ") + "\n" +
            "\n" +

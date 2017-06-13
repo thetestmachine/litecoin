@@ -7,7 +7,7 @@ architectures:
 packages:
 - "faketime"
 remotes:
-- "url": "https://github.com/einsteinium-project/einsteinium-detached-sigs.git"
+- "url": "https://github.com/einsteinium/einsteinium-detached-sigs.git"
   "dir": "signature"
 files:
 - "einsteinium-osx-unsigned.tar.gz"

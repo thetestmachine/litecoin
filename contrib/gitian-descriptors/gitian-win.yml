@@ -22,7 +22,7 @@ packages:
 - "ca-certificates"
 - "python"
 remotes:
-- "url": "https://github.com/einsteinium-project/einsteinium.git"
+- "url": "https://github.com/einsteinium/einsteinium.git"
   "dir": "einsteinium"
 files: []
 script: |
