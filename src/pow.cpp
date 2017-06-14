@@ -10,6 +10,7 @@
 #include "primitives/block.h"
 #include "uint256.h"
 #include "util.h"
+#include <inttypes.h>
 
 
 static const int64_t nDiffChangeTarget = 56000; // Patch effective @ block 56000
@@ -47,7 +48,7 @@ unsigned int DigiShield(const CBlockIndex* pindexLast, const CBlockHeader *pbloc
 
     // Limit adjustment step
     int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
-    printf(" nActualTimespan = %"PRI64d" before bounds\n", nActualTimespan);
+    printf(" nActualTimespan = %" PRId64 " before bounds\n", nActualTimespan);
     
     arith_uint256 bnNew;
     bnNew.SetCompact(pindexLast->nBits);
@@ -68,9 +69,9 @@ unsigned int DigiShield(const CBlockIndex* pindexLast, const CBlockHeader *pbloc
 
     /// debug print
     printf("GetNextWorkRequired: DIGISHIELD RETARGET\n");
-    printf("nTargetTimespan = %"PRI64d" nActualTimespan = %"PRI64d"\n", retargetTimespan, nActualTimespan);
-    printf("Before: %08x %s\n", pindexLast->nBits, arith_uint256().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
-    printf("After: %08x %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
+    printf("nTargetTimespan = %" PRId64 " nActualTimespan = %" PRId64 "\n", retargetTimespan, nActualTimespan);
+    printf("Before: %08x %s\n", pindexLast->nBits, ArithToUint256(arith_uint256().SetCompact(pindexLast->nBits)).ToString().c_str());
+    printf("After: %08x %s\n", bnNew.GetCompact(), ArithToUint256(bnNew).ToString().c_str());
 
     return bnNew.GetCompact();
 }
