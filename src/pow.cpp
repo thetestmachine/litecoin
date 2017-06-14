@@ -102,7 +102,14 @@ unsigned int KimotoGravityWell(const CBlockIndex* pindexLast, const CBlockHeader
                 PastBlocksMass++;
                 
                 if (i == 1) { PastDifficultyAverage.SetCompact(BlockReading->nBits); }
-                else        { PastDifficultyAverage = ((arith_uint256().SetCompact(BlockReading->nBits) - PastDifficultyAveragePrev) / i) + PastDifficultyAveragePrev; }
+                else {
+					// Quick fix for avoiding negative numbers (arith_uint256 is unsigned int256 so it can't work with negative numbers)
+					arith_uint256 nBitsCompact = arith_uint256().SetCompact(BlockReading->nBits);
+					if (nBitsCompact > PastDifficultyAveragePrev)
+						PastDifficultyAverage = PastDifficultyAveragePrev + ((nBitsCompact - PastDifficultyAveragePrev) / i);
+					else
+						PastDifficultyAverage = PastDifficultyAveragePrev - ((PastDifficultyAveragePrev - nBitsCompact) / i);					
+				}
                 PastDifficultyAveragePrev = PastDifficultyAverage;
                 
                 PastRateActualSeconds                        = BlockLastSolved->GetBlockTime() - BlockReading->GetBlockTime();
