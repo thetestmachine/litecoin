@@ -174,14 +174,19 @@ CBlockTemplate* BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn)
     CMutableTransaction coinbaseTx;
     coinbaseTx.vin.resize(1);
     coinbaseTx.vin[0].prevout.SetNull();
-    coinbaseTx.vout.resize(1);
-    coinbaseTx.vout[0].scriptPubKey = scriptPubKeyIn;
-    coinbaseTx.vout[0].nValue = nFees + GetBlockSubsidy(nHeight, chainparams.GetConsensus());
+    coinbaseTx.vout.resize(2); // EINSTEINIUM SPECIFICATIONS: 2 transactions, first transaction to charity address
+	coinbaseTx.vout[0].scriptPubKey = CScript() << OP_DUP << OP_HASH160 << ParseHex("1cec44c9f9b769ae08ebf9d694c7611a16edf615") << OP_EQUALVERIFY << OP_CHECKSIG; // CHARITY_ADDRESS = "1cec44c9f9b769ae08ebf9d694c7611a16edf615"
+    coinbaseTx.vout[1].scriptPubKey = scriptPubKeyIn;	
+	// With Einsteinium, at least 2.5% of all of the block subsidy should go to the charity address.
+	int64_t reward = GetBlockSubsidy(nHeight, chainparams.GetConsensus()); // EINSTEINIUM SPECIFICATIONS
+	int64_t charityAmount = reward * 2.5 / 100; // EINSTEINIUM SPECIFICATIONS
+	coinbaseTx.vout[0].nValue = charityAmount; // EINSTEINIUM SPECIFICATIONS
+	coinbaseTx.vout[1].nValue = reward - charityAmount + nFees; // EINSTEINIUM SPECIFICATIONS
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
     pblock->vtx[0] = coinbaseTx;
     pblocktemplate->vchCoinbaseCommitment = GenerateCoinbaseCommitment(*pblock, pindexPrev, chainparams.GetConsensus());
     pblocktemplate->vTxFees[0] = -nFees;
-
+	
     uint64_t nSerializeSize = GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION);
     LogPrintf("CreateNewBlock(): total size: %u block weight: %u txs: %u fees: %ld sigops %d\n", nSerializeSize, GetBlockWeight(*pblock), nBlockTx, nFees, nBlockSigOpsCost);
 
