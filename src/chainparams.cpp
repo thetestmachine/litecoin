@@ -125,7 +125,7 @@ public:
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,33); // EINSTEINIUM SPECIFICATIONS: PUBKEY_ADDRESS = 33, // Einsteinium addresses start with E
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // EINSTEINIUM SPECIFICATIONS: SCRIPT_ADDRESS = 5
         base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,50); // keeping LTC specifications
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,176); // keeping LTC specifications
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,176); // EINSTEINIUM SPECIFICATIONS: PRIVKEY = 176
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >(); // keeping LTC specifications
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >(); // keeping LTC specifications
 
@@ -145,10 +145,10 @@ public:
 			(   51365, uint256S("0x702b407c68091f3c97a587a8d92684666bb622f6821944424b850964b366e42c"))
 			(  621000, uint256S("0xe2bf6d219cff9d6d7661b7964a05bfea3128265275c3673616ae71fed7072981"))
 			( 1400000, uint256S("0x203cb3ce9b2111cd6d68e9452c8f47965e50748bc9cdd3fa6a5ba477506b6f8d")),
-			1493506738, // * UNIX timestamp of last checkpoint block
-			2136658,   // * total number of transactions between genesis and last checkpoint
-			//   (the tx=... number in the SetBestChain debug.log lines)
-			8000.0     // * estimated number of transactions per day after checkpoint
+			1493506738,	// * UNIX timestamp of last checkpoint block
+			2136658,	// * total number of transactions between genesis and last checkpoint
+						//   (the tx=... number in the SetBestChain debug.log lines)
+			8000.0		// * estimated number of transactions per day after checkpoint
 	};
 
     }
@@ -192,6 +192,7 @@ public:
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000872d04d7");
 
+		// EINSTEINIUM SPECIFICATIONS
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xa2;
         pchMessageStart[2] = 0xf0;
@@ -199,22 +200,22 @@ public:
         nDefaultPort = 31878;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1392841423, 3236648, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1394240633, 987452, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256S("0x4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0"));
-        //assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+        assert(consensus.hashGenesisBlock == uint256S("0x6259347489c26417e91aa6690859fb2ed66a899d24598924a24927162edcd73f"));
+        assert(genesis.hashMerkleRoot == uint256S("0xb3e47e8776012ee4352acf603e6b9df005445dcba85c606697f422be3cc26f9b"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
         vSeeds.push_back(CDNSSeedData("test.emc2.foundation", "dnsseedertest01.emc2.foundation"));
         
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,58);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
-        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111); // EINSTEINIUM SPECIFICATIONS: PUBKEY_ADDRESS_TEST = 111
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196); // EINSTEINIUM SPECIFICATIONS: SCRIPT_ADDRESS_TEST = 196
+        base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,58); // keeping LTC specifications
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239); // EINSTEINIUM SPECIFICATIONS: PRIVKEY_TEST = 239
+        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >(); // keeping LTC specifications
+        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >(); // keeping LTC specifications
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
@@ -227,10 +228,11 @@ public:
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
-            ( 2056, uint256S("0x17748a31ba97afdc9a4f86837a39d287e3e7c7290a08a1d816c5969c78a83289")),
-            1487036370,
-            2057,
-            576
+            ( 0, uint256S("0x6259347489c26417e91aa6690859fb2ed66a899d24598924a24927162edcd73f")),
+            1394240633,	// * UNIX timestamp of last checkpoint block
+			0,			// * total number of transactions between genesis and last checkpoint
+						//   (the tx=... number in the SetBestChain debug.log lines)
+			1000.0		// * estimated number of transactions per day after checkpoint
         };
 
     }
