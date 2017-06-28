@@ -74,7 +74,7 @@ public:
         consensus.nMajorityEnforceBlockUpgrade = 7500;
         consensus.nMajorityRejectBlockOutdated = 9500;
         consensus.nMajorityWindow = 10000;
-        consensus.BIP34Height = 1; // first version 2 block height
+        consensus.BIP34Height = 3000000; // don't check for version 2 blocks before this block
         consensus.BIP34Hash = uint256S("0xd1c175570320d4d6388a4525385b8f20460d340f621cfeebb9824712b9e593c5"); // first version 2 block hash
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 60;
@@ -163,10 +163,10 @@ public:
     CTestNetParams() {
         strNetworkID = "test";
         consensus.nSubsidyHalvingInterval = 840000;
-        consensus.nMajorityEnforceBlockUpgrade = 51;
-        consensus.nMajorityRejectBlockOutdated = 75;
-        consensus.nMajorityWindow = 100;
-        consensus.BIP34Height = -1;
+        consensus.nMajorityEnforceBlockUpgrade = 51000; // Test: don't upgrade for now
+        consensus.nMajorityRejectBlockOutdated = 75000; // Test: don't upgrade for now
+        consensus.nMajorityWindow = 100000; // Test: don't upgrade for now
+        consensus.BIP34Height = 3000000; // don't check for version 2 blocks before this block
         consensus.BIP34Hash = uint256S("");
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 60;
